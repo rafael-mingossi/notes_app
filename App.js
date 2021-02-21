@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, TouchableOpacity, TextInput } from "react-native";
+import {
+  Text,
+  View,
+  TouchableOpacity,
+  TextInput,
+  AsyncStorage,
+} from "react-native";
 import styles from "./styles";
 import Header from "./components/Header";
 //import ButtonPlus from "./components/ButtonPlus";
@@ -9,23 +15,58 @@ const App = () => {
   //defining state variable for reading notes
   const [state, setState] = useState("reading");
   //defining state variable for writing notes
-  const [notes, setNotes] = useState(
-    "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages"
-  );
+  const [notes, setNotes] = useState("");
+
+  //Use useEffect only once ,[]
+  useEffect(() => {
+    //when the app starts the key notes will be read
+    (async () => {
+      try {
+        const notesRead = await AsyncStorage.getItem("notes");
+        setNotes(notesRead);
+      } catch (error) {}
+    })();
+  }, []);
+
+  //Create a func to save notes when closing app
+  setData = async () => {
+    try {
+      await AsyncStorage.setItem("notes", notes);
+    } catch (error) {}
+    alert("Your note's been saved!");
+  };
+
+  function updateText() {
+    setState("reading");
+    setData();
+  }
 
   //validating which state is the current one
   if (state == "reading") {
     return (
       <View style={styles.mainView}>
         <Header />
-        <View style={styles.notesView}>
-          <Text style={styles.notesTxt}>{notes}</Text>
-        </View>
+        {/* Verify if there is any note */}
+        {notes != "" ? (
+          <View style={styles.notesView}>
+            <Text style={styles.notesTxt}>{notes}</Text>
+          </View>
+        ) : (
+          <View style={styles.notesViewEmpty}>
+            <Text style={styles.notesTxtEmpty}>You don't have any notes!</Text>
+          </View>
+        )}
+        {/* Plus button */}
         <TouchableOpacity
           onPress={() => setState("updating")}
           style={styles.buttonPlus}
         >
-          <Text style={styles.btnPlusTxt}>+</Text>
+          {/* Validating type of button to showdepending on whether notes are empty or not*/}
+          {notes == "" ? (
+            <Text style={styles.btnPlusTxt}>+</Text>
+          ) : (
+            <Text style={styles.btnPlusTxt2}>Edit</Text>
+          )}
         </TouchableOpacity>
       </View>
     );
@@ -40,10 +81,11 @@ const App = () => {
           multiline={true}
           numberOfLines={5}
           value={notes}
+          autoFocus={true}
         ></TextInput>
 
         <TouchableOpacity
-          onPress={() => setState("reading")}
+          onPress={() => updateText()}
           style={styles.buttonSave}
         >
           <Text style={styles.btnSaveTxt}>Save</Text>
