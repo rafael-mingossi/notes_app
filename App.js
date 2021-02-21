@@ -5,6 +5,8 @@ import {
   TouchableOpacity,
   TextInput,
   AsyncStorage,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import styles from "./styles";
 import Header from "./components/Header";
@@ -44,53 +46,67 @@ const App = () => {
   //validating which state is the current one
   if (state == "reading") {
     return (
-      <View style={styles.mainView}>
-        <Header />
-        {/* Verify if there is any note */}
-        {notes != "" ? (
-          <View style={styles.notesView}>
-            <Text style={styles.notesTxt}>{notes}</Text>
-          </View>
-        ) : (
-          <View style={styles.notesViewEmpty}>
-            <Text style={styles.notesTxtEmpty}>You don't have any notes!</Text>
-          </View>
-        )}
-        {/* Plus button */}
-        <TouchableOpacity
-          onPress={() => setState("updating")}
-          style={styles.buttonPlus}
-        >
-          {/* Validating type of button to showdepending on whether notes are empty or not*/}
-          {notes == "" ? (
-            <Text style={styles.btnPlusTxt}>+</Text>
+      <TouchableWithoutFeedback
+        onPress={() => {
+          Keyboard.dismiss();
+        }}
+      >
+        <View style={styles.mainView}>
+          <Header />
+          {/* Verify if there is any note */}
+          {notes != "" ? (
+            <View style={styles.notesView}>
+              <Text style={styles.notesTxt}>{notes}</Text>
+            </View>
           ) : (
-            <Text style={styles.btnPlusTxt2}>Edit</Text>
+            <View style={styles.notesViewEmpty}>
+              <Text style={styles.notesTxtEmpty}>
+                You don't have any notes!
+              </Text>
+            </View>
           )}
-        </TouchableOpacity>
-      </View>
+          {/* Plus button */}
+          <TouchableOpacity
+            onPress={() => setState("updating")}
+            style={styles.buttonPlus}
+          >
+            {/* Validating type of button to showdepending on whether notes are empty or not*/}
+            {notes == "" ? (
+              <Text style={styles.btnPlusTxt}>+</Text>
+            ) : (
+              <Text style={styles.btnPlusTxt2}>Edit</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      </TouchableWithoutFeedback>
     );
   } else if (state == "updating") {
     return (
-      <View style={styles.mainView}>
-        <Header />
+      <TouchableWithoutFeedback
+        onPress={() => {
+          Keyboard.dismiss();
+        }}
+      >
+        <View style={styles.mainView}>
+          <Header />
 
-        <TextInput
-          style={styles.txtInput}
-          onChangeText={(text) => setNotes(text)}
-          multiline={true}
-          numberOfLines={5}
-          value={notes}
-          autoFocus={true}
-        ></TextInput>
+          <TextInput
+            style={styles.txtInput}
+            onChangeText={(text) => setNotes(text)}
+            multiline={true}
+            numberOfLines={5}
+            value={notes}
+            autoFocus={true}
+          ></TextInput>
 
-        <TouchableOpacity
-          onPress={() => updateText()}
-          style={styles.buttonSave}
-        >
-          <Text style={styles.btnSaveTxt}>Save</Text>
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity
+            onPress={() => updateText()}
+            style={styles.buttonSave}
+          >
+            <Text style={styles.btnSaveTxt}>Save</Text>
+          </TouchableOpacity>
+        </View>
+      </TouchableWithoutFeedback>
     );
   }
 };
